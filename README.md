@@ -3,3 +3,4 @@
 sudo iptables -A OUTPUT -p tcp --tcp-flags RST RST -j DROP
 always run no frag server
 
+# QuantumRNG_xChaCha20Poly1305_Falcon_Harakav2_NTRU-Client
