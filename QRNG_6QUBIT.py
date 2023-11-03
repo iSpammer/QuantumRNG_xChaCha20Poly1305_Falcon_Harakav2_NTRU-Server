@@ -55,7 +55,7 @@ def QRNG_GEN(who):
     qc.measure(qr, cr)
 
     # See a list of available local simulators
-    print("Aer backends: ", Aer.backends())
+    # print("Aer backends: ", Aer.backends())
 
     # Choose an accuracy level and a confidence level
     epsilon = 0.01  # You can change this according to your preference
@@ -69,7 +69,7 @@ def QRNG_GEN(who):
     # n = math.ceil(0.25/(epsilon**2*delta)) # You can uncomment this if you want to use Chebyshev's inequality
 
     # Print the number of shots
-    print('Number of shots:', n)
+    # print('Number of shots:', n)
 
     # Choose a backend to run the circuit
     backend = Aer.get_backend('qasm_simulator')
@@ -96,7 +96,7 @@ def QRNG_GEN(who):
     nonce = BitArray(hex=he)
     # nonce = _bitstring_to_bytes(nonce)
     # Print the nonce
-    print(who,"'s s Nonce:", nonce.tobytes())
+    # print(who,"'s s Nonce:", nonce.tobytes())
 
     return (nonce.tobytes())
 

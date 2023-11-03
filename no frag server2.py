@@ -143,8 +143,9 @@ pub_bytes = str(pub_key)
 msg1 = params + b'|' + bytes(pub_bytes.encode())
 # Create a TCP packet with the message as the payload
 pkt1 = ip_pkt / EncryptedTCP( flags="PA") / msg1
-print("sending pub key")
+print("sending pub key", pkt1.show())
 send(pkt1)
+# reply1 = sr1(pkt1)
 # Send the packet and receive the reply text of 700 bytes from the client
 reply1 = sniff(filter=f"ip and host {server_ip}", count=1)[0]
 print("sent, waiting for cipher text from client")
