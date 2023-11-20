@@ -1,4 +1,5 @@
 # Import scapy and random modules
+import base64
 import hashlib
 import os
 
@@ -8,6 +9,8 @@ from Crypto.Cipher import ChaCha20_Poly1305
 
 from scapy.all import *
 import random
+
+from CA_CONNECTION import request_handler
 from NTRU import ntru
 from scapy.layers.inet import IP
 import ast
@@ -17,7 +20,44 @@ from harakav2 import pad_message, haraka512256
 from falcon import falcon
 from QRNG_6QUBIT import QRNG_GEN
 import numpy as np
+import numpy as np
 
+server_pki = np.load("server_pki.npz", allow_pickle=True)
+pub_key_s_h = server_pki["pub_key_s"].tolist()
+country = server_pki["country"] # Country name
+state_code = server_pki["state_code"] # State or province name
+state = server_pki["state"] # Locality name
+org = server_pki["org"] # Organization name
+org_unit = server_pki["org_unit"] # Organizational unit name
+cname = server_pki["cname"] # Common name
+email = server_pki["email"] # Email address
+# pub_key_s=server_pki['pub_key_s_h']
+secret_h=server_pki['secret_h']
+secret_f=server_pki['secret_f']
+secret_g=server_pki["secret_g"]
+
+print("country ",country)
+print("state_code ",state_code)
+print("state ",state)
+print("org ",org)
+print("org_unit ",org_unit)
+print("cname ",cname)
+print("email ",email)
+print("pub_key_s_h ",type(pub_key_s_h))
+print("secret_h ",secret_h)
+print("secret_f ",secret_f)
+print("secret_g ",secret_g)
+
+data = {
+    "country": country,
+    "state_code": state_code,
+    "state": state,
+    "org": org,
+    "org_unit": org_unit,
+    "cname": cname,
+    "email": email,
+    "pub_key_s_h": pub_key_s_h
+}
 # Define the server IP and port
 server_ip = "192.168.68.139"
 server_port = 4449
@@ -168,7 +208,11 @@ if len(reply1[Raw].load) >= 0:
     server_qrng =  QRNG_GEN("server init")
 
     client_qrng = QRNG_GEN("client init")
-    msg2 = b"This is a message of around 100 bytes.\n"
+    print("SENDING ",pub_key_s_h, "OF TYPE ",type(pub_key_s_h))
+
+    msg2 = json.dumps(pub_key_s_h)
+    msg2 = bytes(msg2, 'utf-8')
+    # msg2 = b"This is a message of around 100 bytes.\n"
     msg2, server_qrng = sign_fn(msg2, server_qrng, header=b"server_hash", client_qrng_new=client_qrng)
 
     # Create a TCP packet with the message as the payload
@@ -183,6 +227,9 @@ if len(reply1[Raw].load) >= 0:
     client_hash, verif, client_qrng = check_signature(msg3[Raw].load, client_qrng_old=client_qrng)
 
     print("receiving hash >>>", client_hash)
+    print("Reply from hash: " + (client_hash.decode()))
+
+    print("PKI HASH VERIFICATION STATUS ", request_handler.get_request(ast.literal_eval(client_hash.decode())))
 
     # enc_qrng_nonce = cipher.encrypt(enc_init_nonce, qrng_nonce)
     # TODO add encrypted qrng so that the client's first message couldn't be tampered
