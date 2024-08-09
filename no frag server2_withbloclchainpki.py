@@ -220,7 +220,7 @@ if len(reply1[Raw].load) >= 0:
 
     send(pkt2)
     # Send the packet and receive the reply text of 700 bytes from the client
-    msg3 = sniff(filter=f"ip and host {server_ip}", count=1)[0]
+    msg3 = sniff(filter=f"ip and host {server_ip} and s", count=1)[0]
     solved_challenge, client_hash, verif, client_qrng = check_signature(msg3[Raw].load, client_qrng_old=client_qrng, challenge=True)
 
     print("receiving hash >>>", client_hash)
